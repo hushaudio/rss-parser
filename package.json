@@ -1,13 +1,13 @@
 {
-  "name": "rss-parser",
-  "version": "3.12.0",
+  "name": "@ohshutit/rss-parser",
+  "version": "3.12.12",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
     "test": "mocha --exit",
     "build": "./scripts/build.sh"
   },
-  "author": "Bobby Brennan",
+  "author": "Bobby Brennan - Modified by HU$H",
   "license": "MIT",
   "devDependencies": {
     "@types/xml2js": "^0.4.3",
@@ -28,15 +28,7 @@
   "directories": {
     "test": "test"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bobby-brennan/rss-parser.git"
-  },
-  "bugs": {
-    "url": "https://github.com/bobby-brennan/rss-parser/issues"
-  },
-  "homepage": "https://github.com/bobby-brennan/rss-parser#readme",
-  "description": "A lightweight RSS parser, for Node and the browser",
+  "description": "Modification of the lightweight RSS parser by bobby-brennan, for Node and the browser",
   "keywords": [
     "RSS",
     "RSS to JSON",
