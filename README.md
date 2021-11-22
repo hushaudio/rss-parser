@@ -1,20 +1,17 @@
 # rss-parser
 
 [![Version][npm-image]][npm-link]
-[![Build Status][build-image]][build-link]
-[![Downloads][downloads-image]][npm-link]
 
 [downloads-image]: https://img.shields.io/npm/dm/rss-parser.svg
 [npm-image]: https://img.shields.io/npm/v/rss-parser.svg
-[npm-link]: https://npmjs.org/package/rss-parser
-[build-image]: https://github.com/rbren/rss-parser/workflows/tests/badge.svg
-[build-link]: https://github.com/rbren/rss-parser/actions
+[npm-link]: https://www.npmjs.com/package/@ohshutit/rss-parser
+[build-link]: https://github.com/hushaudio/rss-parser/actions
 
-A small library for turning RSS XML feeds into JavaScript objects.
+This is a A small library for turning RSS XML feeds into JavaScript objects.  This is a fork of https://github.com/rbren/rss-parser
 
 ## Installation
 ```bash
-npm install --save rss-parser
+npm install --save @ohshutit/rss-parser
 ```
 
 ## Usage
@@ -26,7 +23,7 @@ Both callbacks and Promises are supported.
 Here's an example in NodeJS using Promises with async/await:
 
 ```js
-let Parser = require('rss-parser');
+let Parser = require('@ohshutit/rss-parser');
 let parser = new Parser();
 
 (async () => {
@@ -45,7 +42,7 @@ let parser = new Parser();
 When using TypeScript, you can set a type to control the custom fields:
 
 ```typescript
-import Parser from 'rss-parser';
+import Parser from '@ohshutit/rss-parser';
 
 type CustomFeed = {foo: string};
 type CustomItem = {bar: number};
@@ -77,7 +74,7 @@ const parser: Parser<CustomFeed, CustomItem> = new Parser({
 Here's an example in the browser using callbacks:
 
 ```html
-<script src="/node_modules/rss-parser/dist/rss-parser.min.js"></script>
+<script src="/node_modules/@ohshutit/rss-parser/dist/rss-parser.min.js"></script>
 <script>
 
 // Note: some RSS feeds can't be loaded in the browser due to CORS security.
