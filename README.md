@@ -1,268 +1,123 @@
-# rss-parser
+# RSS Parser
 
-[![Version][npm-image]][npm-link]
+[![npm version](https://img.shields.io/npm/v/rss-parser.svg)][npm-link]
+[![npm downloads](https://img.shields.io/npm/dm/rss-parser.svg)][npm-link]
 
-[downloads-image]: https://img.shields.io/npm/dm/rss-parser.svg
-[npm-image]: https://img.shields.io/npm/v/rss-parser.svg
 [npm-link]: https://www.npmjs.com/package/@ohshutit/rss-parser
-[build-link]: https://github.com/hushaudio/rss-parser/actions
 
-This is a A small library for turning RSS XML feeds into JavaScript objects.  This is a fork of https://github.com/rbren/rss-parser
+RSS Parser is an advanced library designed to convert RSS XML feeds into JavaScript objects efficiently. This project is a refined fork of the original work found at [https://github.com/rbren/rss-parser](https://github.com/rbren/rss-parser), featuring enhancements and extended capabilities.
 
 ## Installation
+
+To integrate RSS Parser into your project, execute the following command:
+
 ```bash
 npm install --save @ohshutit/rss-parser
 ```
 
-## Usage
-You can parse RSS from a URL (`parser.parseURL`) or an XML string (`parser.parseString`).
+## Usage Overview
 
-Both callbacks and Promises are supported.
+RSS Parser offers flexibility by allowing RSS feeds to be parsed from URLs (`parser.parseURL`) or directly from XML strings (`parser.parseString`). It supports both callback and Promise-based workflows, catering to a variety of development preferences.
 
-### NodeJS
-Here's an example in NodeJS using Promises with async/await:
+### In Node.js
 
-```js
-let Parser = require('@ohshutit/rss-parser');
+Here is a Node.js example demonstrating asynchronous usage with Promises:
+
+```javascript
+const Parser = require('@ohshutit/rss-parser');
 let parser = new Parser();
 
 (async () => {
-
   let feed = await parser.parseURL('https://www.reddit.com/.rss');
   console.log(feed.title);
-
   feed.items.forEach(item => {
-    console.log(item.title + ':' + item.link)
+    console.log(`${item.title}: ${item.link}`);
   });
-
 })();
 ```
 
-### TypeScript
-When using TypeScript, you can set a type to control the custom fields:
+### Using TypeScript
+
+For TypeScript users, type definitions can be applied to enhance development experience:
 
 ```typescript
-import Parser from '@ohshutit/rss-parser';
+import Parser, { IFeed, IItem } from '@ohshutit/rss-parser';
 
-type CustomFeed = {foo: string};
-type CustomItem = {bar: number};
+interface CustomFeed extends IFeed {
+  foo: string;
+}
+interface CustomItem extends IItem {
+  bar: number;
+}
 
-const parser: Parser<CustomFeed, CustomItem> = new Parser({
+const parser = new Parser<CustomFeed, CustomItem>({
   customFields: {
-    feed: ['foo', 'baz'],
-    //            ^ will error because `baz` is not a key of CustomFeed
+    feed: ['foo'],
     item: ['bar']
   }
 });
 
 (async () => {
-
   const feed = await parser.parseURL('https://www.reddit.com/.rss');
-  console.log(feed.title); // feed will have a `foo` property, type as a string
-
+  console.log(feed.foo); // Accessing custom field
   feed.items.forEach(item => {
-    console.log(item.title + ':' + item.link) // item will have a `bar` property type as a number
+    console.log(`${item.title}: ${item.link}`);
   });
 })();
 ```
 
-### Web
-> We recommend using a bundler like [webpack](https://webpack.js.org/), but we also provide
-> pre-built browser distributions in the `dist/` folder. If you use the pre-built distribution,
-> you'll need a [polyfill](https://github.com/taylorhakes/promise-polyfill) for Promise support.
+### In the Browser
 
-Here's an example in the browser using callbacks:
+For browser environments, consider using a module bundler like webpack. We also offer pre-built distributions for direct usage, but remember to include a Promise polyfill for compatibility.
 
 ```html
 <script src="/node_modules/@ohshutit/rss-parser/dist/rss-parser.min.js"></script>
 <script>
-
-// Note: some RSS feeds can't be loaded in the browser due to CORS security.
-// To get around this, you can use a proxy.
-const CORS_PROXY = "https://cors-anywhere.herokuapp.com/"
+const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
 
 let parser = new RSSParser();
 parser.parseURL(CORS_PROXY + 'https://www.reddit.com/.rss', function(err, feed) {
   if (err) throw err;
   console.log(feed.title);
-  feed.items.forEach(function(entry) {
-    console.log(entry.title + ':' + entry.link);
-  })
-})
-
+  feed.items.forEach(entry => {
+    console.log(`${entry.title}: ${entry.link}`);
+  });
+});
 </script>
 ```
 
-### Upgrading from v2 to v3
-A few minor breaking changes were made in v3. Here's what you need to know:
+### Migration Guide: v2 to v3
 
-* You need to construct a `new Parser()` before calling `parseString` or `parseURL`
-* `parseFile` is no longer available (for better browser support)
-* `options` are now passed to the Parser constructor
-* `parsed.feed` is now just `feed` (top-level object removed)
-* `feed.entries` is now `feed.items` (to better match RSS XML)
+Transitioning from version 2 to version 3 involves several minor adjustments:
 
+- Instantiate `Parser` before using `parseString` or `parseURL`.
+- `parseFile` method has been removed to improve browser support.
+- Configuration options are now provided through the `Parser` constructor.
+- The structure of the parsed output has been simplified for direct access.
 
-## Output
-Check out the full output format in [test/output/reddit.json](test/output/reddit.json)
+## Output Specification
 
-```yaml
-feedUrl: 'https://www.reddit.com/.rss'
-title: 'reddit: the front page of the internet'
-description: ""
-link: 'https://www.reddit.com/'
-items:
-    - title: 'The water is too deep, so he improvises'
-      link: 'https://www.reddit.com/r/funny/comments/3skxqc/the_water_is_too_deep_so_he_improvises/'
-      pubDate: 'Thu, 12 Nov 2015 21:16:39 +0000'
-      creator: "John Doe"
-      content: '<a href="http://example.com">this is a link</a> &amp; <b>this is bold text</b>'
-      contentSnippet: 'this is a link & this is bold text'
-      guid: 'https://www.reddit.com/r/funny/comments/3skxqc/the_water_is_too_deep_so_he_improvises/'
-      categories:
-          - funny
-      isoDate: '2015-11-12T21:16:39.000Z'
-```
+Explore the complete format of parsed RSS feeds in our [sample output](test/output/reddit.json).
 
-##### Notes:
-* The `contentSnippet` field strips out HTML tags and unescapes HTML entities
-* The `dc:` prefix will be removed from all fields
-* Both `dc:date` and `pubDate` will be available in ISO 8601 format as `isoDate`
-* If `author` is specified, but not `dc:creator`, `creator` will be set to `author` ([see article](http://www.lowter.com/blogs/2008/2/9/rss-dccreator-author))
-* Atom's `updated` becomes `lastBuildDate` for consistency
-
-## XML Options
+## Advanced Configuration
 
 ### Custom Fields
-If your RSS feed contains fields that aren't currently returned, you can access them using the `customFields` option.
 
-```js
-let parser = new Parser({
-  customFields: {
-    feed: ['otherTitle', 'extendedDescription'],
-    item: ['coAuthor','subtitle'],
-  }
-});
+Extend parsing capabilities with `customFields` to include unique or additional feed and item properties.
 
-parser.parseURL('https://www.reddit.com/.rss', function(err, feed) {
-  console.log(feed.extendedDescription);
+### XML and HTTP Options
 
-  feed.items.forEach(function(entry) {
-    console.log(entry.coAuthor + ':' + entry.subtitle);
-  })
-})
-```
-
-To rename fields, you can pass in an array with two items, in the format `[fromField, toField]`:
-
-```js
-let parser = new Parser({
-  customFields: {
-    item: [
-      ['dc:coAuthor', 'coAuthor'],
-    ]
-  }
-})
-```
-
-To pass additional flags, provide an object as the third array item. Currently there is one such flag:
-
-* `keepArray (false)` - set to `true` to return *all* values for fields that can have multiple entries.
-* `includeSnippet (false)` - set to `true` to add an additional field, `${toField}Snippet`, with HTML stripped out
-
-```js
-let parser = new Parser({
-  customFields: {
-    item: [
-      ['media:content', 'media:content', {keepArray: true}],
-    ]
-  }
-})
-```
-
-### Default RSS version
-If your RSS Feed doesn't contain a `<rss>` tag with a `version` attribute,
-you can pass a `defaultRSS` option for the Parser to use:
-```js
-let parser = new Parser({
-  defaultRSS: 2.0
-});
-```
-
-
-### xml2js passthrough
-`rss-parser` uses [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js)
-to parse XML. You can pass [these options](https://github.com/Leonidas-from-XIV/node-xml2js#options)
-to `new xml2js.Parser()` by specifying `options.xml2js`:
-
-```js
-let parser = new Parser({
-  xml2js: {
-    emptyTag: '--EMPTY--',
-  }
-});
-```
-
-## HTTP Options
-
-### Timeout
-You can set the amount of time (in milliseconds) to wait before the HTTP request times out (default 60 seconds):
-
-```js
-let parser = new Parser({
-  timeout: 1000,
-});
-```
-
-### Headers
-You can pass headers to the HTTP request:
-```js
-let parser = new Parser({
-  headers: {'User-Agent': 'something different'},
-});
-```
-
-### Redirects
-By default, `parseURL` will follow up to five redirects. You can change this
-with `options.maxRedirects`.
-
-```js
-let parser = new Parser({maxRedirects: 100});
-```
-
-### Request passthrough
-`rss-parser` uses [http](https://nodejs.org/docs/latest/api/http.html#http_http_get_url_options_callback)/[https](https://nodejs.org/docs/latest/api/https.html#https_https_get_url_options_callback) module
-to do requests. You can pass [these options](https://nodejs.org/docs/latest/api/https.html#https_https_request_options_callback)
-to `http.get()`/`https.get()` by specifying `options.requestOptions`:
-
-e.g. to allow unauthorized certificate
-```js
-let parser = new Parser({
-  requestOptions: {
-    rejectUnauthorized: false
-  }
-});
-```
+Leverage `xml2js` options for XML parsing customization and configure HTTP request details, including timeout, headers, and redirects, to fit your application's needs.
 
 ## Contributing
-Contributions are welcome! If you are adding a feature or fixing a bug, please be sure to add a [test case](https://github.com/bobby-brennan/rss-parser/tree/master/test/input)
 
-### Running Tests
-The tests run the RSS parser for several sample RSS feeds in `test/input` and outputs the resulting JSON into `test/output`. If there are any changes to the output files the tests will fail.
+We encourage contributions! If you're adding a feature or fixing a bug, please include a test case. Follow the guidelines for running tests and publishing releases to ensure quality and consistency.
 
-To check if your changes affect the output of any test cases, run
+### Testing and Release Process
 
-`npm test`
+- Test your changes with `npm test`. If output files are affected, verify and update them as needed.
+- Publish releases with a clear process, ensuring changes are built and documented correctly.
 
-To update the output files with your changes, run
+For a detailed guide on contributing, running tests, and publishing, refer to the project's GitHub repository.
 
-`WRITE_GOLDEN=true npm test`
-
-### Publishing Releases
-```bash
-npm run build
-git commit -a -m "Build distribution"
-npm version minor # or major/patch
-npm publish
-git push --follow-tags
-```
+Join us in enhancing RSS Parser to meet the evolving needs of developers and applications worldwide.
