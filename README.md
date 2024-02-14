@@ -1,7 +1,6 @@
 # RSS Parser
 
 [![npm version](https://img.shields.io/npm/v/rss-parser.svg)][npm-link]
-[![npm downloads](https://img.shields.io/npm/dm/rss-parser.svg)][npm-link]
 
 [npm-link]: https://www.npmjs.com/package/@ohshutit/rss-parser
 
